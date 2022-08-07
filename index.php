@@ -31,7 +31,7 @@ require_once "conexao.php";
 
 <body>
     <form method="GET" name="frmpost" action="">
-        <h4>Bpspessoasweb</h4>
+        <h4>Relatório</h4>
         <?php
         $s = '';
         $txt = '';
