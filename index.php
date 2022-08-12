@@ -25,23 +25,48 @@ require_once "conexao.php";
             border: 1px solid #000000;
         }
 
-       
+        .btable {
+            font-weight: bold;
+        }
     </style>
 </head>
 
 <body>
     <form method="GET" name="frmpost" action="">
-        <h4>Relatório</h4>
+        <h4><a href="./">Bpspessoasweb</a></h4>
         <?php
         $s = '';
         $txt = '';
+        $seq = ' order by nome asc';
+        $o = 'asc';
+
+        if (isset($_GET['order'])) {
+            if ($_GET['order'] == 'asc') {
+                $o = 'desc';
+            } else {
+                $o = 'asc';
+            }
+        }
+        
+
+        if (isset($_GET['seq'])) {
+            $seq = " order by $_GET[seq] $o ";
+        } else {
+            $seq = " order by nome $o ";
+        }
+
+        if(isset($_GET['n'])){
+            $o = $_GET['order'];
+            $seq = $_GET['seq'];
+        }
+
 
         if (isset($_GET['txtsearch'])) {
             $txt = $_GET['txtsearch'];
-            $s = " and nome_pessoa like '%" . $txt . "%' or email like '%" . $txt . "%' ";
+            $s = " and (nome_pessoa like '%" . $txt . "%' or email like '%" . $txt . "%')";
         }
         ?>
-        <div>Procurar: <input type="text" name="txtsearch" value="<?=$txt?>"> <button type="submit">Buscar</button></div>
+        <div>Procurar: <input type="text" name="txtsearch" value="<?= $txt ?>"> <button type="submit">Buscar</button></div>
         <?php
         try {
 
@@ -66,7 +91,7 @@ require_once "conexao.php";
         $total % 100 ? $tpage = $total / 100 + 1 : $tpage / 100;
 
         for ($i = 1; $i <= $tpage; $i++) {
-            echo " <a href='?page=$i&txtsearch=$txt'>$i</a> ";
+            echo " <a href='?seq=$seq&order=$o&page=$i&txtsearch=$txt&n=1'>$i</a> ";
         }
         if (!empty($objrs[0]['total'])) {
             echo " <a href='#'>></a></div>";
@@ -83,33 +108,36 @@ require_once "conexao.php";
         <table>
             <tr>
                 <td>
-                    <div"></div>
+                    <div class="btable"></div>
                 </td>
                 <td>
-                    <div"><a href="#">Nome</a></div>
+                    <div class="btable"><a href="?seq=nome&order=<?= $o ?>&txtsearch=<?= $txt ?>">Nome</a></div>
                 </td>
                 <td>
-                    <div"><a href="#">E-mail</a></div>
+                    <div class="btable"><a href="?seq=email&order=<?= $o ?>&txtsearch=<?= $txt ?>">Email</a></div>
                 </td>
                 <td>
-                    <div"><a href="#">CPF</a></div>
+                    <div class="btable"><a href="?seq=CPF&order=<?= $o ?>&txtsearch=<?= $txt ?>">CPF</a></div>
                 </td>
                 <td>
-                    <div"><a href="#">ID</a></div>
+                    <div class="btable"><a href="?seq=id_pessoa&order=<?= $o ?>&txtsearch=<?= $txt ?>">ID</a></div>
                 </td>
                 <td>
-                    <div"><a href="#">Telefone</a></div>
+                    <div class="btable"><a href="?seq=TEL_CONTATO&order=<?= $o ?>&txtsearch=<?= $txt ?>">Telefone</a></div>
                 </td>
                 <td>
-                    <div"><a href="#">Matrícula</a></div>
+                    <div class="btable"><a href="?seq=MATRICULA&order=<?= $o ?>&txtsearch=<?= $txt ?>">Matrícula</a></div>
                 </td>
                 <td>
-                    <div"><a href="#">Registro</a></div>
+                    <div class="btable"><a href="?seq=data_registro&order=<?= $o ?>&txtsearch=<?= $txt ?>">Registro</a></div>
                 </td>
             </tr>
             <?php
             try {
-                $query = $Conexao->query("select CPF, data_registro, id_pessoa, MATRICULA, TEL_CONTATO, LTRIM(nome_pessoa) nome, email from BPSPESSOASWEB_PESSOAS where 1=1 $s order by nome asc $p");
+                //echo "select CPF, data_registro, id_pessoa, MATRICULA, TEL_CONTATO, LTRIM(nome_pessoa) nome, LTRIM(nome_pessoa) email from BPSPESSOASWEB_PESSOAS where 1=1 $s $seq $p";
+                //echo "<br>";
+                $query = $Conexao->query("select CPF, CONVERT(VARCHAR(10), data_registro, 103) + ' ' + CONVERT(VARCHAR(8), data_registro, 108) as data_registro1, id_pessoa, MATRICULA, TEL_CONTATO, LTRIM(nome_pessoa) nome, LTRIM(email) email from BPSPESSOASWEB_PESSOAS where 1=1 $s $seq $p");
+
                 $objrs = $query->fetchAll();
             } catch (Exception $e) {
 
@@ -123,13 +151,13 @@ require_once "conexao.php";
             ?>
                 <tr>
                     <td><?= $i++; ?></td>
-                    <td><?php echo $ors['nome']; ?></td>
+                    <td style='cursor: pointer;'><?php echo $ors['nome']; ?></td>
                     <td><?php echo $ors['email']; ?></td>
                     <td><?php echo $ors['CPF']; ?></td>
                     <td><?php echo $ors['id_pessoa']; ?></td>
                     <td><?php echo $ors['TEL_CONTATO']; ?></td>
                     <td><?php echo $ors['MATRICULA']; ?></td>
-                    <td><?php echo $ors['data_registro']; ?></td>
+                    <td><?php echo $ors['data_registro1']; ?></td>
                 </tr>
             <?php
             }
