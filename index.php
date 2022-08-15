@@ -88,11 +88,19 @@ require_once "conexao.php";
             echo "<div style='padding-bottom: 10px;'>Total de alunos: " . $total . "</div><div><a href='#'><</a> ";
         }
 
+        // Operador ternário
         $total % 100 ? $tpage = $total / 100 + 1 : $tpage / 100;
 
         for ($i = 1; $i <= $tpage; $i++) {
-            echo " <a href='?seq=$seq&order=$o&page=$i&txtsearch=$txt&n=1'>$i</a> ";
+            $b = '';
+            if(isset($_GET['page'])){
+                if($_GET['page'] == $i){
+                    $b = "style='font-weight: bold;'";
+                }                
+            }
+            echo " <a $b href='?seq=$seq&order=$o&page=$i&txtsearch=$txt&n=1'>$i</a> ";
         }
+        
         if (!empty($objrs[0]['total'])) {
             echo " <a href='#'>></a></div>";
         }
@@ -150,8 +158,8 @@ require_once "conexao.php";
             foreach ($objrs as $ors) {
             ?>
                 <tr>
-                    <td><?= $i++; ?></td>
-                    <td style='cursor: pointer;'><?php echo $ors['nome']; ?></td>
+                    <td style='cursor: pointer;'><?= $i++; ?></td>
+                    <td><?php echo $ors['nome']; ?></td>
                     <td><?php echo $ors['email']; ?></td>
                     <td><?php echo $ors['CPF']; ?></td>
                     <td><?php echo $ors['id_pessoa']; ?></td>
