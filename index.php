@@ -23,12 +23,30 @@ require_once "conexao.php";
 
         table tr td {
             border: 1px solid #000000;
-        }
-
+        }        
+        
         .btable {
             font-weight: bold;
         }
     </style>
+    <script>
+        var a = '';
+        function displayLineInfo(v) {
+            //alert('a: '+a+' v: '+v);   
+            if(a != ''){
+               document.getElementById('vline' + a).style.display = 'none';
+               alert('teste');
+            }         
+            x = document.getElementById('vline' + v);
+            if (x.style.display === 'none') {
+                x.style.display = 'block';
+            } else {
+                x.style.display = 'none';
+            }
+            a = v;
+            return true;
+        }
+    </script>
 </head>
 
 <body>
@@ -47,7 +65,7 @@ require_once "conexao.php";
                 $o = 'asc';
             }
         }
-        
+
 
         if (isset($_GET['seq'])) {
             $seq = " order by $_GET[seq] $o ";
@@ -55,7 +73,7 @@ require_once "conexao.php";
             $seq = " order by nome $o ";
         }
 
-        if(isset($_GET['n'])){
+        if (isset($_GET['n'])) {
             $o = $_GET['order'];
             $seq = $_GET['seq'];
         }
@@ -93,14 +111,14 @@ require_once "conexao.php";
 
         for ($i = 1; $i <= $tpage; $i++) {
             $b = '';
-            if(isset($_GET['page'])){
-                if($_GET['page'] == $i){
+            if (isset($_GET['page'])) {
+                if ($_GET['page'] == $i) {
                     $b = "style='font-weight: bold;'";
-                }                
+                }
             }
             echo " <a $b href='?seq=$seq&order=$o&page=$i&txtsearch=$txt&n=1'>$i</a> ";
         }
-        
+
         if (!empty($objrs[0]['total'])) {
             echo " <a href='#'>></a></div>";
         }
@@ -158,8 +176,11 @@ require_once "conexao.php";
             foreach ($objrs as $ors) {
             ?>
                 <tr>
-                    <td style='cursor: pointer;'><?= $i++; ?></td>
-                    <td><?php echo $ors['nome']; ?></td>
+                    <td style='cursor: pointer;' onclick="displayLineInfo(<?= $i+1; ?>)"><?= $i++; ?></td>
+                    <td>
+                        <?php echo $ors['nome']; ?>
+                        <div id="vline<?= $i; ?>" style="display: none; position: absolute;border: 1px solid #000000; background-color: #ffffff; padding: 5px;">aaaaaaaaa</div>
+                    </td>
                     <td><?php echo $ors['email']; ?></td>
                     <td><?php echo $ors['CPF']; ?></td>
                     <td><?php echo $ors['id_pessoa']; ?></td>
@@ -167,6 +188,7 @@ require_once "conexao.php";
                     <td><?php echo $ors['MATRICULA']; ?></td>
                     <td><?php echo $ors['data_registro1']; ?></td>
                 </tr>
+                
             <?php
             }
             ?>
